@@ -58,6 +58,17 @@ else
 
     // List of posts
     private List<PostModel> posts = new List<PostModel>();
+    private Timer timer;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await OnAfterRenderAsync(firstRender: true);
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
+    }
 
     public async Task HandleValidSubmit()
     {
@@ -68,7 +79,7 @@ else
         // add persistence logic here
         //Example: (using local storage of browser)
         string serialisedPosts = System.Text.Json.JsonSerializer.Serialize(posts);
-        await jsRuntime.InvokeAsync<object>("localStorage.setItem", new object[] { "posts", serialisedPosts });
+        System.IO.File.WriteAllText($@"C:\Posts.json", serialisedPosts);
     }
 
     // Retrieve the posts from the local storage
