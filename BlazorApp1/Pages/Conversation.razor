@@ -1,5 +1,6 @@
 ﻿
 @page "/conversationthread"
+@inject IJSRuntime jsRuntime;
 
 <!-- Conversation thread title -->
 <h1>Conversation Thread</h1>
@@ -58,11 +59,26 @@ else
     // List of posts
     private List<PostModel> posts = new List<PostModel>();
 
-        public void HandleValidSubmit()
-        {
+    public async Task HandleValidSubmit()
+    {
         // Add logic for handling valid submit here
         posts.Add(newPost);
         newPost = new PostModel(); // clear form
+
+        // add persistence logic here
+        //Example: (using local storage of browser)
+        string serialisedPosts = System.Text.Json.JsonSerializer.Serialize(posts);
+        await jsRuntime.InvokeAsync<object>("localStorage.setItem", new object[] { "posts", serialisedPosts });
+    }
+
+    // Retrieve the posts from the local storage
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var postJson = await jsRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "posts" });
+        if (!string.IsNullOrEmpty(postJson))
+        {
+            posts = System.Text.Json.JsonSerializer.Deserialize<List<PostModel>>(postJson);
         }
+    }
 
 }
