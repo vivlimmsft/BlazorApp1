@@ -1,0 +1,68 @@
+﻿
+@page "/conversationthread"
+
+<!-- Conversation thread title -->
+<h1>Conversation Thread</h1>
+
+<!-- Displayed post content -->
+@if(posts?.Any() == true)
+{
+    @foreach (var post in posts)
+    {
+        <div class="post">
+            <div class="post-content">
+                <h3>@post.Title</h3>
+                <p>@post.Content</p>
+            </div>
+            <div class="post-footer">
+                <p>Posted by @post.Author on @post.DatePosted</p>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>No posts yet.</p>
+}
+
+<!-- Form for creating new posts -->
+<h2>New Post</h2>
+<EditForm Model="@newPost" OnValidSubmit="@HandleValidSubmit">
+    <div class="form-group">
+        <label for="post-title">Title:</label>
+        <InputText id="post-title" class="form-control" @bind-Value="@newPost.Title" />
+        <ValidationMessage For="@(() => newPost.Title)" />
+    </div>
+    <div class="form-group">
+        <label for="post-content">Content:</label>
+        <InputTextArea id="post-content" class="form-control" @bind-Value="@newPost.Content" />
+        <ValidationMessage For="@(() => newPost.Content)" />
+    </div>
+    <button type="submit">Create</button>
+</EditForm>
+
+@code {
+
+    // Define post model
+    public class PostModel
+    {
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public string Author { get; set; }
+        public DateTime DatePosted { get; set; }
+    }
+
+    // Initialize new post model
+    private PostModel newPost = new PostModel();
+
+    // List of posts
+    private List<PostModel> posts = new List<PostModel>();
+
+        public void HandleValidSubmit()
+        {
+        // Add logic for handling valid submit here
+        posts.Add(newPost);
+        newPost = new PostModel(); // clear form
+        }
+
+}

@@ -1,0 +1,22 @@
+﻿<CascadingAuthenticationState>
+    <!-- Router for handling routes -->
+    <Router AppAssembly="@typeof(App).Assembly">
+        <!-- Found section for handling successful route matches -->
+        <Found Context="routeData">
+            <!-- Authorize Route View for authenticated routes -->
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <!-- Focus on the first h1 element after navigating -->
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <!-- NotFound section for handling invalid routes -->
+        <NotFound>
+            <!-- Set page title -->
+            <PageTitle>Not found</PageTitle>
+            <!-- Use MainLayout for layout -->
+            <LayoutView Layout="@typeof(MainLayout)">
+                <!-- Display alert message for invalid routes -->
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
