@@ -59,6 +59,7 @@ else
     // List of posts
     private List<PostModel> posts = new List<PostModel>();
     private Timer timer;
+    private static string postsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "posts.json");
 
     protected async override Task OnInitializedAsync()
     {
@@ -73,19 +74,25 @@ else
     public async Task HandleValidSubmit()
     {
         // Add logic for handling valid submit here
+        newPost.DatePosted = DateTime.Now; //set post date time to current time
+
         posts.Add(newPost);
         newPost = new PostModel(); // clear form
 
         // add persistence logic here
         //Example: (using local storage of browser)
         string serialisedPosts = System.Text.Json.JsonSerializer.Serialize(posts);
-        System.IO.File.WriteAllText($@"C:\Posts.json", serialisedPosts);
+        System.IO.File.WriteAllText(postsFileName, serialisedPosts);
     }
 
-    // Retrieve the posts from the local storage
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var postJson = await jsRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "posts" });
+        if (!System.IO.File.Exists(postsFileName)) // check if file exists
+        {
+            System.IO.File.Create(postsFileName).Dispose(); // create the file
+        }
+
+        string postJson = await File.ReadAllTextAsync(postsFileName);
         if (!string.IsNullOrEmpty(postJson))
         {
             posts = System.Text.Json.JsonSerializer.Deserialize<List<PostModel>>(postJson);
